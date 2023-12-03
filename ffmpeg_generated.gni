@@ -452,6 +452,35 @@ if ((is_apple) || (is_win) || (use_linux_config)) {
     "libavcodec/vp8dsp.c",
     "libavcodec/vpx_rac.c",
   ]
+  ffmpeg_c_sources += [
+    "libavcodec/bswapdsp.c",
+    "libavcodec/autorename_libavcodec_hevcdec.c",
+    "libavcodec/hevc_cabac.c",
+    "libavcodec/hevc_data.c",
+    "libavcodec/hevc_filter.c",
+    "libavcodec/hevc_mvs.c",
+    "libavcodec/hevc_parse.c",
+    "libavcodec/hevc_parser.c",
+    "libavcodec/hevc_ps.c",
+    "libavcodec/hevc_refs.c",
+    "libavcodec/hevc_sei.c",
+    "libavcodec/hevcdsp.c",
+    "libavcodec/hevcpred.c",
+    "libavcodec/x86/bswapdsp_init.c",
+    "libavcodec/x86/hevcdsp_init.c",
+    "libavformat/autorename_libavformat_hevc.c",
+    "libavformat/hevcdec.c",
+    "libavcodec/dovi_rpu.c"
+  ]
+  ffmpeg_asm_sources += [
+    "libavcodec/x86/bswapdsp.asm",
+    "libavcodec/x86/hevc_deblock.asm",
+    "libavcodec/x86/hevc_idct.asm",
+    "libavcodec/x86/hevc_mc.asm",
+    "libavcodec/x86/hevc_add_res.asm",
+    "libavcodec/x86/hevc_sao.asm",
+    "libavcodec/x86/hevc_sao_10bit.asm",
+  ]
 }
 
 if ((is_android && current_cpu == "x64") || (is_android && current_cpu == "x86") || (is_apple && current_cpu == "x64") || (is_win && current_cpu == "x64") || (is_win && current_cpu == "x86") || (use_linux_config && current_cpu == "x64") || (use_linux_config && current_cpu == "x86")) {

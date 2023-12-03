@@ -96,10 +96,11 @@ Platform specific build notes:
     Once you have a working Chromium build that can cross-compile, you'll also
     need to run $chrome_dir/tools/clang/scripts/update.py --package=objdump to
     pick up the llvm-ar and llvm-nm tools. You can then build as normal.
-
+ export PATH=/cygdrive/c/Users/eeuser/Download/depot_tools:$PATH 
     If not cross-compiling, script must be run on Windows with VS2015 or higher
     under Cygwin (or MinGW, but as of 1.0.11, it has serious performance issues
     with make which makes building take hours).
+/home/eeuser/depot_tools:/usr/local/bin:/usr/bin:/cygdrive/c/Windows/system32:/cygdrive/c/Windows:/cygdrive/c/Windows/System32/Wbem:/cygdrive/c/Windows/System32/WindowsPowerShell/v1.0:/cygdrive/c/Windows/System32/OpenSSH:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/MATLAB/R2023a/runtime/win64:/cygdrive/c/Program Files/MATLAB/R2023a/bin:/cygdrive/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit:/cygdrive/c/Program Files/Git/cmd:/cygdrive/c/Program Files/Bandizip:/usr/bin:/cygdrive/c/Users/eeuser/Documents/GitHub/sparkrtc/smooth/ffmpeglib/lib:/cygdrive/c/Users/eeuser/Documents/GitHub/sparkrtc/third_party/openh264/src/myhevc/lib:/cygdrive/c/Users/eeuser/AppData/Local/GitHubDesktop/bin:/cygdrive/c/Users/eeuser/AppData/Local/Programs/Microsoft VS Code/bin:/cygdrive/c/Users/eeuser/AppData/Local/Google/Cloud SDK/google-cloud-sdk/bin:/cygdrive/c/Users/eeuser/ffmpeg_bin
 
     Additionally, ensure you have the correct toolchain environment for building.
     The x86 toolchain environment is required for ia32 builds and the x64 one
@@ -688,6 +689,11 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch, parallel_jobs,
       '--enable-static',
       '--enable-libopus',
 
+'--enable-decoder=h264,hevc',
+        '--enable-protocol=file',
+        '--enable-demuxer=mov',
+        '--enable-bsf=h264_mp4toannexb,hevc_mp4toannexb',
+
       # Disable features.
       '--disable-debug',
       '--disable-bzlib',
@@ -1015,9 +1021,9 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch, parallel_jobs,
 
   # Google Chrome & ChromeOS specific configuration.
   configure_flags['Chrome'].extend([
-      '--enable-decoder=aac,h264',
-      '--enable-demuxer=aac',
-      '--enable-parser=aac,h264',
+      '--enable-decoder=aac,h264,hevc',
+      '--enable-demuxer=aac,hevc',
+      '--enable-parser=aac,h264,hevc',
   ])
 
   # Google ChromeOS specific configuration.

@@ -148,7 +148,7 @@ class RoboConfiguration:
   def EnsureHostInfo(self):
     """Ensure that the host architecture and platform are set."""
     kernel, host, os, *rest = shell.output_or_error(["uname", "-a"]).split()
-    assert kernel in ("Linux", "linux")
+    # assert kernel in ("Linux", "linux")
     assert "x86_64" in rest
     self._host_operating_system = "linux"
     self._host_architecture = "x64"
