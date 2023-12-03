@@ -978,6 +978,10 @@ static int send_next_delayed_frame(H264Context *h, AVFrame *dst_frame,
 
     return buf_index;
 }
+extern uint8_t* my_recon_buf[3];
+extern int letsdothis;
+extern int mywidth;
+extern int myheight;
 
 static int h264_decode_frame(AVCodecContext *avctx, AVFrame *pict,
                              int *got_frame, AVPacket *avpkt)
@@ -1015,6 +1019,31 @@ static int h264_decode_frame(AVCodecContext *avctx, AVFrame *pict,
     buf_index = decode_nal_units(h, buf, buf_size);
     if (buf_index < 0)
         return AVERROR_INVALIDDATA;
+
+
+    if (letsdothis && h->cur_pic_ptr && h->cur_pic_ptr->f->key_frame) {
+        fprintf(stderr, "DEC Y linesize:%d, height:%d\n", h->cur_pic_ptr->f->linesize[0], h->cur_pic_ptr->f->height);
+        fprintf(stderr, "DEC U linesize:%d, height:%d\n", h->cur_pic_ptr->f->linesize[1], h->cur_pic_ptr->f->height / 2);
+        fprintf(stderr, "DEC V linesize:%d, height:%d\n", h->cur_pic_ptr->f->linesize[2], h->cur_pic_ptr->f->height / 2);
+
+        int ysize = h->cur_pic_ptr->f->linesize[0] * h->cur_pic_ptr->f->height;
+
+
+        for(int i = 0;i < myheight;i++) {
+            memcpy(my_recon_buf[0] + i * mywidth, h->cur_pic_ptr->f->data[0] + i * h->cur_pic_ptr->f->linesize[0], mywidth);
+        }
+
+        for(int i = 0;i < myheight / 2;i++) {
+            memcpy(my_recon_buf[1] + i * mywidth / 2, h->cur_pic_ptr->f->data[1] + i * h->cur_pic_ptr->f->linesize[1], mywidth / 2);
+        }
+
+        for(int i = 0;i < myheight / 2;i++) {
+            memcpy(my_recon_buf[2] + i * mywidth / 2, h->cur_pic_ptr->f->data[2] + i * h->cur_pic_ptr->f->linesize[2], mywidth / 2);
+        }
+        
+        
+    }
+
 
     if (!h->cur_pic_ptr && h->nal_unit_type == H264_NAL_END_SEQUENCE) {
         av_assert0(buf_index <= buf_size);

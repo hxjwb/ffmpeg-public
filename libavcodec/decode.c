@@ -724,6 +724,51 @@ int attribute_align_arg avcodec_send_packet(AVCodecContext *avctx, const AVPacke
     return 0;
 }
 
+uint8_t* my_recon_buf[3];
+int letsdothis = 0; //Lets change the codec 
+int mywidth;
+int myheight;
+int attribute_align_arg avcodec_send_packet_my(AVCodecContext *avctx, const AVPacket *avpkt,uint8_t* recon_data[3],int w,int h)
+{
+    letsdothis = 1;
+    my_recon_buf[0] = recon_data[0];
+    my_recon_buf[1] = recon_data[1];
+    my_recon_buf[2] = recon_data[2];
+
+    mywidth = w;
+    myheight = h;
+
+    AVCodecInternal *avci = avctx->internal;
+    DecodeContext     *dc = decode_ctx(avci);
+    int ret;
+
+    if (!avcodec_is_open(avctx) || !av_codec_is_decoder(avctx->codec))
+        return AVERROR(EINVAL);
+
+    if (dc->draining_started)
+        return AVERROR_EOF;
+
+    if (avpkt && !avpkt->size && avpkt->data)
+        return AVERROR(EINVAL);
+
+    if (avpkt && (avpkt->data || avpkt->side_data_elems)) {
+        if (!AVPACKET_IS_EMPTY(avci->buffer_pkt))
+            return AVERROR(EAGAIN);
+        ret = av_packet_ref(avci->buffer_pkt, avpkt);
+        if (ret < 0)
+            return ret;
+    } else
+        dc->draining_started = 1;
+
+    if (!avci->buffer_frame->buf[0] && !dc->draining_started) {
+        ret = decode_receive_frame_internal(avctx, avci->buffer_frame);
+        if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+            return ret;
+    }
+
+    return 0;
+}
+
 static int apply_cropping(AVCodecContext *avctx, AVFrame *frame)
 {
     /* make sure we are noisy about decoders returning invalid cropping data */
